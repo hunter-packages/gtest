@@ -61,6 +61,16 @@ link_directories(${gtest_BINARY_DIR}/src)
 
 ########################################################################
 #
+# Hunter and Sugar (https://github.com/ruslo/{hunter, sugar})
+
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/HunterGate.cmake")
+include(hunter_add_package)
+hunter_add_package(Sugar)
+include("${SUGAR_ROOT}/cmake/Sugar")
+include(sugar_install_library)
+
+########################################################################
+#
 # Defines the gtest & gtest_main libraries.  User tests should link
 # with one of them.
 
@@ -70,6 +80,18 @@ link_directories(${gtest_BINARY_DIR}/src)
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
+
+sugar_install_library(TARGETS gtest_main DESTINATION "./")
+sugar_install_library(TARGETS gtest DESTINATION "./")
+install(
+    DIRECTORY
+    "./include"
+    DESTINATION
+    "./"
+    FILES_MATCHING
+    PATTERN
+    "*.h"
+)
 
 ########################################################################
 #

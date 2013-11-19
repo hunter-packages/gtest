@@ -1,3 +1,52 @@
+### About patch (BEGIN -- ###
+
+This is one extra patch version of gtest:
+* add install target
+* easy iOS fat libraries build
+* hunter package manager integration
+
+Usage:
+
+1. Download gtest library:
+> wget https://github.com/hunter-packages/gtest/archive/v1.7.0-hunter.tar.gz
+> tar -xf v1.7.0-hunter.tar.gz
+> export GTEST_DIR=`pwd`/gtest-1.7.0-hunter
+
+2. Build/install gtest (native platform, if needed):
+> cd ${GTEST_DIR}
+> mkdir -p _builds/make
+> cd _builds/make
+> cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/Install/make ../..
+> make install
+
+3. Build universal(iphone + simulator) iOS library (Xcode only):
+> cd ${GTEST_DIR}
+> mkdir -p _builds/xcode
+> cd _builds/xcode
+> cmake -GXcode -DCMAKE_TOOLCHAIN_FILE=${GTEST_DIR}/cmake/iOS.cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/Install/ios ../..
+> xcodebuild -target install
+
+4. Check installed iOS libraries (debug + release):
+> ls ${GTEST_DIR}/Install/ios/*.a
+libgtest.a libgtest_main.a libgtestd.a libgtest_maind.a
+> file ${GTEST_DIR}/Install/ios/libgtest.a
+libgtest.a: Mach-O universal binary with 2 architectures
+libgtest.a (for architecture armv7): current ar archive random library
+libgtest.a (for architecture i386): current ar archive random library
+
+Source:
+* https://github.com/hunter-packages/gtest
+
+More tools and examples:
+* https://github.com/ruslo/sugar (tools, wrappers, workarounds, ...)
+* https://github.com/ruslo/polly (toolchain files)
+* https://github.com/ruslo/hunter (package manager)
+
+Live CI build testing:
+* https://github.com/travis-ci-tester/travis-test-gtest
+
+### -- END) ###
+
 Google C++ Testing Framework
 ============================
 
