@@ -12,6 +12,8 @@
 #   Test and Google Mock's option() definitions, and thus must be
 #   called *after* the options have been defined.
 
+include(sugar_add_library)
+
 # Tweaks CMake's default compiler/linker settings to suit Google Test's needs.
 #
 # This must be a macro(), as inside a function string() can only
@@ -127,7 +129,7 @@ endmacro()
 function(cxx_library_with_type name type cxx_flags)
   # type can be either STATIC or SHARED to denote a static or shared library.
   # ARGN refers to additional arguments after 'cxx_flags'.
-  add_library(${name} ${type} ${ARGN})
+  sugar_add_library(${name} ${type} ${ARGN})
   set_target_properties(${name}
     PROPERTIES
     COMPILE_FLAGS "${cxx_flags}")

@@ -5,6 +5,30 @@
 # ctest.  You can select which tests to run using 'ctest -R regex'.
 # For more options, run 'ctest --help'.
 
+# Name of the project.
+#
+# CMake files in this project can refer to the root source directory
+# as ${gtest_SOURCE_DIR} and to the root binary directory as
+# ${gtest_BINARY_DIR}.
+# Language "C" is required for find_package(Threads).
+
+cmake_minimum_required(VERSION 2.6.2)
+project(gtest CXX C)
+
+########################################################################
+#
+# Hunter and Sugar (https://github.com/ruslo/{hunter, sugar})
+
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/HunterGate.cmake")
+include(hunter_add_package)
+hunter_add_package(Sugar)
+
+include("${SUGAR_ROOT}/cmake/Sugar")
+include(sugar_install_library)
+include(sugar_target_link_libraries)
+
+########################################################################
+#
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
@@ -33,15 +57,6 @@ endif()
 #
 # Project-wide settings
 
-# Name of the project.
-#
-# CMake files in this project can refer to the root source directory
-# as ${gtest_SOURCE_DIR} and to the root binary directory as
-# ${gtest_BINARY_DIR}.
-# Language "C" is required for find_package(Threads).
-project(gtest CXX C)
-cmake_minimum_required(VERSION 2.6.2)
-
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
 endif()
@@ -61,16 +76,6 @@ link_directories(${gtest_BINARY_DIR}/src)
 
 ########################################################################
 #
-# Hunter and Sugar (https://github.com/ruslo/{hunter, sugar})
-
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/HunterGate.cmake")
-include(hunter_add_package)
-hunter_add_package(Sugar)
-include("${SUGAR_ROOT}/cmake/Sugar")
-include(sugar_install_library)
-
-########################################################################
-#
 # Defines the gtest & gtest_main libraries.  User tests should link
 # with one of them.
 
@@ -79,7 +84,7 @@ include(sugar_install_library)
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
-target_link_libraries(gtest_main gtest)
+sugar_target_link_libraries(gtest_main gtest)
 
 sugar_install_library(TARGETS gtest_main DESTINATION "./")
 sugar_install_library(TARGETS gtest DESTINATION "./")

@@ -5,12 +5,13 @@ cmake_minimum_required(VERSION 2.8.10) # SHA1
 
 include(ExternalProject)
 
-if("--@HUNTER_ROOT@__" STREQUAL "--__")
+string(COMPARE EQUAL "@HUNTER_ROOT@" "" root_is_empty)
+if(root_is_empty)
   message(FATAL_ERROR "HUNTER_ROOT is empty")
 endif()
 
-set(VERSION "v0.0.1")
-set(HASH ce4f0ce27361402e608a0f9709025d993f94541d)
+set(VERSION "v0.0.6")
+set(HASH a10641976245ed0031ec2acc4aa9720993575433)
 
 ExternalProject_Add(
     Hunter
