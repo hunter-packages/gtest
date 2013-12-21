@@ -14,16 +14,16 @@ script:
     # Build/install gtest (native platform, if needed):
     - mkdir -p _builds/make
     - cd _builds/make
-    - cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/Install/make ../..
+    - cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/_install/make ../..
     - make install
 
     # Build universal(iphone + simulator) iOS library (Xcode only):
     - cd ${GTEST_DIR}
     - mkdir -p _builds/xcode
     - cd _builds/xcode
-    - cmake -GXcode -DCMAKE_TOOLCHAIN_FILE=${GTEST_DIR}/cmake/iOS.cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/Install/ios ../..
+    - cmake -GXcode -DCMAKE_TOOLCHAIN_FILE=${GTEST_DIR}/cmake/iOS.cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/_install/ios ../..
     - xcodebuild -target install
 
     # Check installed iOS libraries (debug + release):
-    - ls ${GTEST_DIR}/Install/ios/*.a
-    - file ${GTEST_DIR}/Install/ios/libgtest.a
+    - lipo -info ${GTEST_DIR}/_install/ios/libgtest.a
+    - lipo -info ${GTEST_DIR}/_install/ios/libgtestd.a

@@ -19,7 +19,7 @@ project(gtest CXX C)
 #
 # Hunter and Sugar (https://github.com/ruslo/{hunter, sugar})
 
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/HunterGate.cmake")
+include("cmake/HunterGate.cmake")
 include(hunter_add_package)
 hunter_add_package(Sugar)
 

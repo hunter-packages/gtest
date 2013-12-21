@@ -8,31 +8,29 @@ GTest patched version:
 Usage:
 
 1. Download gtest library:
-> wget https://github.com/hunter-packages/gtest/archive/v1.7.0-hunter-1.tar.gz
-> tar -xf v1.7.0-hunter-1.tar.gz
-> export GTEST_DIR=`pwd`/gtest-1.7.0-hunter-1
+> wget https://github.com/hunter-packages/gtest/archive/v1.7.0-hunter-2.tar.gz
+> tar -xf v1.7.0-hunter-2.tar.gz
+> export GTEST_DIR=`pwd`/gtest-1.7.0-hunter-2
 
 2. Build/install gtest (native platform, if needed):
 > cd ${GTEST_DIR}
 > mkdir -p _builds/make
 > cd _builds/make
-> cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/Install/make ../..
+> cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/_install/make ../..
 > make install
 
 3. Build universal(iphone + simulator) iOS library (Xcode only):
 > cd ${GTEST_DIR}
 > mkdir -p _builds/xcode
 > cd _builds/xcode
-> cmake -GXcode -DCMAKE_TOOLCHAIN_FILE=${GTEST_DIR}/cmake/iOS.cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/Install/ios ../..
+> cmake -GXcode -DCMAKE_TOOLCHAIN_FILE=${GTEST_DIR}/cmake/iOS.cmake -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/_install/ios ../..
 > xcodebuild -target install
 
 4. Check installed iOS libraries (debug + release):
-> ls ${GTEST_DIR}/Install/ios/*.a
+> ls ${GTEST_DIR}/_install/ios/*.a
 libgtest.a libgtest_main.a libgtestd.a libgtest_maind.a
-> file ${GTEST_DIR}/Install/ios/libgtest.a
-libgtest.a: Mach-O universal binary with 2 architectures
-libgtest.a (for architecture armv7): current ar archive random library
-libgtest.a (for architecture i386): current ar archive random library
+> lipo -info ${GTEST_DIR}/_install/ios/libgtest.a
+Architectures in the fat file: ./_install/ios/libgtest.a are: armv7 armv7s i386 x86_64 arm64
 
 Source:
 * https://github.com/hunter-packages/gtest
@@ -43,7 +41,8 @@ More tools and examples:
 * https://github.com/ruslo/hunter (package manager)
 
 Live CI build testing:
-* https://github.com/travis-ci-tester/travis-test-gtest
+* https://travis-ci.org/hunter-packages/gtest
+* https://travis-ci.org/travis-ci-tester/travis-test-gtest
 
 ### -- END) ###
 
