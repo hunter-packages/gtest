@@ -8,9 +8,9 @@ GTest patched version:
 Usage:
 
 1. Download gtest library:
-> wget https://github.com/hunter-packages/gtest/archive/v1.7.0-hunter-2.tar.gz
-> tar -xf v1.7.0-hunter-2.tar.gz
-> export GTEST_DIR=`pwd`/gtest-1.7.0-hunter-2
+> wget https://github.com/hunter-packages/gtest/archive/v1.7.0-hunter-3.tar.gz
+> tar -xf v1.7.0-hunter-3.tar.gz
+> export GTEST_DIR=`pwd`/gtest-1.7.0-hunter-3
 
 2. Build/install gtest (native platform, if needed):
 > cd ${GTEST_DIR}
