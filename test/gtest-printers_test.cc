@@ -125,6 +125,7 @@ namespace foo {
 class UnprintableInFoo {
  public:
   UnprintableInFoo() : z_(0) { memcpy(xy_, "\xEF\x12\x0\x0\x34\xAB\x0\x0", 8); }
+  double z() const { return z_; }
  private:
   char xy_[8];
   double z_;
@@ -413,8 +414,6 @@ TEST(PrintCStringTest, EscapesProperly) {
             "\\n\\r\\t\\v\\x7F\\xFF a\"",
             Print(p));
 }
-
-
 
 // MSVC compiler can be configured to define whar_t as a typedef
 // of unsigned short. Defining an overload for const wchar_t* in that case

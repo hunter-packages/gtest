@@ -282,6 +282,14 @@
 # endif
 #endif
 
+// C++11 specifies that <initializer_list> provides std::initializer_list. Use
+// that if gtest is used in C++11 mode and libstdc++ isn't very old (binaries
+// targeting OS X 10.6 can build with clang but need to use gcc4.2's
+// libstdc++).
+#if GTEST_LANG_CXX11 && (!defined(__GLIBCXX__) || __GLIBCXX__ > 20110325)
+# define GTEST_HAS_STD_INITIALIZER_LIST_ 1
+#endif
+
 // Brings in definitions for functions used in the testing::internal::posix
 // namespace (read, write, close, chdir, isatty, stat). We do not currently
 // use them on Windows Mobile.
@@ -782,6 +790,19 @@ using ::std::tuple_size;
 # define GTEST_HAS_CXXABI_H_ 0
 #endif
 
+// A function level attribute to disable checking for use of uninitialized
+// memory when built with MemorySanitizer.
+#if defined(__clang__)
+# if __has_feature(memory_sanitizer)
+#  define GTEST_ATTRIBUTE_NO_SANITIZE_MEMORY_ \
+       __attribute__((no_sanitize_memory))
+# else
+#  define GTEST_ATTRIBUTE_NO_SANITIZE_MEMORY_
+# endif
+#else
+# define GTEST_ATTRIBUTE_NO_SANITIZE_MEMORY_
+#endif
+
 namespace testing {
 
 class Message;
@@ -797,8 +818,8 @@ class Secret;
 // expression is true. For example, you could use it to verify the
 // size of a static array:
 //
-//   GTEST_COMPILE_ASSERT_(ARRAYSIZE(content_type_names) == CONTENT_NUM_TYPES,
-//                         content_type_names_incorrect_size);
+//   GTEST_COMPILE_ASSERT_(GTEST_ARRAY_SIZE_(names) == NUM_NAMES,
+//                         names_incorrect_size);
 //
 // or to make sure a struct is smaller than a certain size:
 //
@@ -865,6 +886,9 @@ struct StaticAssertTypeEqHelper;
 
 template <typename T>
 struct StaticAssertTypeEqHelper<T, T> {};
+
+// Evaluates to the number of elements in 'array'.
+#define GTEST_ARRAY_SIZE_(array) (sizeof(array) / sizeof(array[0]))
 
 #if GTEST_HAS_GLOBAL_STRING
 typedef ::string string;
