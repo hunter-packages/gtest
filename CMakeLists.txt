@@ -12,14 +12,14 @@
 # ${gtest_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
 
-cmake_minimum_required(VERSION 2.6.2)
+cmake_minimum_required(VERSION 2.8.4)
 project(gtest CXX C)
 
 ########################################################################
 #
 # Hunter and Sugar (https://github.com/ruslo/{hunter, sugar})
 
-include("cmake/HunterGate.cmake")
+include(HunterGate.cmake)
 include(hunter_add_package)
 hunter_add_package(Sugar)
 
