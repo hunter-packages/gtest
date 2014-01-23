@@ -40,7 +40,7 @@ endif()
 # ${gtest_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
 project(gtest CXX C)
-cmake_minimum_required(VERSION 2.6.2)
+cmake_minimum_required(VERSION 2.8.12)
 
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
@@ -79,7 +79,45 @@ endif()
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
-target_link_libraries(gtest_main gtest)
+
+add_library(Foo::gtest ALIAS gtest)
+target_link_libraries(gtest_main PUBLIC Foo::gtest)
+target_include_directories(gtest PUBLIC $<INSTALL_INTERFACE:include>)
+
+########################################################################
+#
+# Install libraries
+
+# Install layout
+set(LIB_DEST lib)
+set(CONF_DEST lib/cmake/GTest)
+set(INCL_DEST include)
+
+# Install config
+include(CMakePackageConfigHelpers)
+
+set(config "${CMAKE_CURRENT_BINARY_DIR}/GTestConfig.cmake")
+set(config_version "${CMAKE_CURRENT_BINARY_DIR}/GTestConfigVersion.cmake")
+
+configure_package_config_file(
+    GTestConfig.cmake.in
+    "${config}"
+    INSTALL_DESTINATION ${CONF_DEST}
+    PATH_VARS CONF_DEST
+)
+
+write_basic_package_version_file(
+    "${config_version}"
+    VERSION 1.7.0
+    COMPATIBILITY SameMajorVersion
+)
+
+# Install targets and configs
+set_target_properties(gtest_main PROPERTIES EXPORT_NAME main)
+install(TARGETS gtest gtest_main DESTINATION ${LIB_DEST} EXPORT GTestTargets)
+install(DIRECTORY ${INCL_DEST} DESTINATION . FILES_MATCHING PATTERN "*.h")
+install(EXPORT GTestTargets NAMESPACE GTest:: DESTINATION ${CONF_DEST})
+install(FILES "${config}" "${config_version}" DESTINATION ${CONF_DEST})
 
 ########################################################################
 #

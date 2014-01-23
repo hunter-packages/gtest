@@ -1,3 +1,58 @@
+### About patch (BEGIN -- ###
+
+GTest with install target.
+
+Installation:
+
+1. Download gtest library:
+> wget https://github.com/hunter-packages/gtest/archive/v1.7.0-hunter-4.tar.gz
+> tar -xf v1.7.0-hunter-4.tar.gz
+> cd gtest-1.7.0-hunter-4
+
+2. Build/install gtest (native platform, if needed):
+> cmake -H. -B_builds/make -DCMAKE_INSTALL_PREFIX="`pwd`/_install/make"
+> cmake --build _builds/make --target install
+
+3. Build universal(iphone + simulator) iOS library (Xcode only):
+# download and install patched CMake version:
+> wget https://github.com/ruslo/CMake/archive/ios.universal.tar.gz
+> tar xf ios.universal.tar.gz
+> cmake -HCMake-ios.universal -B_builds/cmake -DCMAKE_USE_SYSTEM_CURL=YES -DCMAKE_BUILD_TYPE=Release
+> cmake --build _builds/cmake --target install
+# install iOS
+> cmake -H. -B_builds/ios -GXcode -DCMAKE_INSTALL_PREFIX="`pwd`/_install/ios" -DCMAKE_TOOLCHAIN_FILE="`pwd`/cmake/iOS.cmake"
+> cmake --build _builds/ios --target install --config Debug
+> cmake --build _builds/ios --target install --config Release
+
+4. Check installed iOS libraries (debug + release):
+> ls _install/ios/lib/*.a
+libgtest.a libgtest_main.a libgtestd.a libgtest_maind.a
+> lipo -info "`find _install/ios -name libgtest.a`"
+Architectures in the fat file: _install/ios/lib/libgtest.a are: i386 x86_64 armv7 armv7s arm64
+
+Usage:
+
+> cat CMakeLists.txt
+# Try to find GTestConfig.cmake in locations:
+#   * CMAKE_INSTALL_PREFIX
+#   * CMAKE_PREFIX_PATH
+#   * GTest_DIR
+find_package(GTest CONFIG REQUIRED)
+
+add_executable(foo foo.cpp)
+add_executable(boo boo.cpp)
+target_link_libraries(foo GTest::main) # GTest::gtest will be linked automatically
+target_link_libraries(boo GTest::gtest)
+
+Source:
+* https://github.com/hunter-packages/gtest
+
+Live CI build testing:
+* https://travis-ci.org/hunter-packages/gtest
+* https://travis-ci.org/travis-ci-tester/travis-test-gtest
+
+### -- END) ###
+
 Google C++ Testing Framework
 ============================
 
