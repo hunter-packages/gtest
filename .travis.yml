@@ -1,11 +1,13 @@
 language:
-    - objective-c
+    - cpp
 
 branches:
   except:
     - master
 
 install:
+    - sudo apt-get install cmake
+    - sudo apt-get install libcurl3-dev
     - wget https://github.com/ruslo/CMake/archive/ios.universal.tar.gz
     - openssl sha1 ios.universal.tar.gz
     - tar xf ios.universal.tar.gz
@@ -19,12 +21,3 @@ script:
     # Build/install gtest (native platform, if needed):
     - cmake -H. -B_builds/make -DCMAKE_INSTALL_PREFIX="`pwd`/_install/make"
     - cmake --build _builds/make --target install
-
-    # Build universal(iphone + simulator) iOS library (Xcode only):
-    - cmake -H. -B_builds/ios -GXcode -DCMAKE_INSTALL_PREFIX="`pwd`/_install/ios" -DCMAKE_TOOLCHAIN_FILE="`pwd`/cmake/iOS.cmake"
-    - cmake --build _builds/ios --target install --config Debug
-    - cmake --build _builds/ios --target install --config Release
-
-    # Check installed iOS libraries (debug + release):
-    - lipo -info "`find _install/ios -name libgtest.a`"
-    - lipo -info "`find _install/ios -name libgtestd.a`"
