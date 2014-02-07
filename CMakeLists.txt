@@ -80,8 +80,7 @@ endif()
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 
-add_library(Foo::gtest ALIAS gtest)
-target_link_libraries(gtest_main PUBLIC Foo::gtest)
+target_link_libraries(gtest_main PUBLIC gtest)
 target_include_directories(gtest PUBLIC $<INSTALL_INTERFACE:include>)
 
 ########################################################################
