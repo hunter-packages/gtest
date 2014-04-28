@@ -6,6 +6,7 @@ branches:
     - master
 
 install:
+    - brew install cmake
     - wget https://github.com/ruslo/CMake/archive/ios.universal.tar.gz
     - openssl sha1 ios.universal.tar.gz
     - tar xf ios.universal.tar.gz
