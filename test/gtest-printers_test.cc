@@ -50,13 +50,17 @@
 
 #include "gtest/gtest.h"
 
-// hash_map and hash_set are available under Visual C++.
-#if _MSC_VER
-# define GTEST_HAS_HASH_MAP_ 1  // Indicates that hash_map is available.
+// hash_map and hash_set are available under Visual C++, or on Linux.
+#if GTEST_HAS_HASH_MAP_
 # include <hash_map>            // NOLINT
-# define GTEST_HAS_HASH_SET_ 1  // Indicates that hash_set is available.
+#endif  // GTEST_HAS_HASH_MAP_
+#if GTEST_HAS_HASH_SET_
 # include <hash_set>            // NOLINT
-#endif  // GTEST_OS_WINDOWS
+#endif  // GTEST_HAS_HASH_SET_
+
+#if GTEST_HAS_STD_FORWARD_LIST_
+# include <forward_list> // NOLINT
+#endif  // GTEST_HAS_STD_FORWARD_LIST_
 
 // Some user-defined types for testing the universal value printer.
 
@@ -202,12 +206,12 @@ using ::testing::internal::FormatForComparisonFailureMessage;
 using ::testing::internal::ImplicitCast_;
 using ::testing::internal::NativeArray;
 using ::testing::internal::RE;
+using ::testing::internal::RelationToSourceReference;
 using ::testing::internal::Strings;
 using ::testing::internal::UniversalPrint;
 using ::testing::internal::UniversalPrinter;
 using ::testing::internal::UniversalTersePrint;
 using ::testing::internal::UniversalTersePrintTupleFieldsToStrings;
-using ::testing::internal::kReference;
 using ::testing::internal::string;
 
 // The hash_* classes are not part of the C++ standard.  STLport
@@ -913,6 +917,17 @@ TEST(PrintStlContainerTest, MultiSet) {
   EXPECT_EQ("{ 1, 1, 1, 2, 5 }", Print(set1));
 }
 
+#if GTEST_HAS_STD_FORWARD_LIST_
+// <slist> is available on Linux in the google3 mode, but not on
+// Windows or Mac OS X.
+
+TEST(PrintStlContainerTest, SinglyLinkedList) {
+  int a[] = { 9, 2, 8 };
+  const std::forward_list<int> ints(a, a + 3);
+  EXPECT_EQ("{ 9, 2, 8 }", Print(ints));
+}
+#endif  // GTEST_HAS_STD_FORWARD_LIST_
+
 TEST(PrintStlContainerTest, Pair) {
   pair<const bool, int> p(true, 5);
   EXPECT_EQ("(true, 5)", Print(p));
@@ -946,13 +961,13 @@ TEST(PrintStlContainerTest, NestedContainer) {
 
 TEST(PrintStlContainerTest, OneDimensionalNativeArray) {
   const int a[3] = { 1, 2, 3 };
-  NativeArray<int> b(a, 3, kReference);
+  NativeArray<int> b(a, 3, RelationToSourceReference());
   EXPECT_EQ("{ 1, 2, 3 }", Print(b));
 }
 
 TEST(PrintStlContainerTest, TwoDimensionalNativeArray) {
   const int a[2][3] = { { 1, 2, 3 }, { 4, 5, 6 } };
-  NativeArray<int[3]> b(a, 2, kReference);
+  NativeArray<int[3]> b(a, 2, RelationToSourceReference());
   EXPECT_EQ("{ { 1, 2, 3 }, { 4, 5, 6 } }", Print(b));
 }
 
@@ -1037,7 +1052,7 @@ TEST(PrintTr1TupleTest, NestedTuple) {
 
 #endif  // GTEST_HAS_TR1_TUPLE
 
-#if GTEST_LANG_CXX11
+#if GTEST_HAS_STD_TUPLE_
 // Tests printing ::std::tuples.
 
 // Tuples of various arities.
@@ -1161,37 +1176,6 @@ TEST(PrintPrintableTypeTest, TemplateInUserNamespace) {
   EXPECT_EQ("PrintableViaPrintToTemplate: 5",
             Print(::foo::PrintableViaPrintToTemplate<int>(5)));
 }
-
-#if GTEST_HAS_PROTOBUF_
-
-// Tests printing a short proto2 message.
-TEST(PrintProto2MessageTest, PrintsShortDebugStringWhenItIsShort) {
-  testing::internal::FooMessage msg;
-  msg.set_int_field(2);
-  msg.set_string_field("hello");
-  EXPECT_PRED2(RE::FullMatch, Print(msg),
-               "<int_field:\\s*2\\s+string_field:\\s*\"hello\">");
-}
-
-// Tests printing a long proto2 message.
-TEST(PrintProto2MessageTest, PrintsDebugStringWhenItIsLong) {
-  testing::internal::FooMessage msg;
-  msg.set_int_field(2);
-  msg.set_string_field("hello");
-  msg.add_names("peter");
-  msg.add_names("paul");
-  msg.add_names("mary");
-  EXPECT_PRED2(RE::FullMatch, Print(msg),
-               "<\n"
-               "int_field:\\s*2\n"
-               "string_field:\\s*\"hello\"\n"
-               "names:\\s*\"peter\"\n"
-               "names:\\s*\"paul\"\n"
-               "names:\\s*\"mary\"\n"
-               ">");
-}
-
-#endif  // GTEST_HAS_PROTOBUF_
 
 // Tests that the universal printer prints both the address and the
 // value of a reference.
@@ -1648,3 +1632,4 @@ TEST(UniversalTersePrintTupleFieldsToStringsTestWithStd, PrintsTersely) {
 
 }  // namespace gtest_printers_test
 }  // namespace testing
+
